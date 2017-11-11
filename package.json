@@ -1,6 +1,6 @@
 {
-  "name": "node-knockout-react-node-starter",
-  "version": "0.0.0",
+  "name": "psql-ws",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "express": "^4.15.4",
