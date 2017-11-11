@@ -1,31 +1,38 @@
 const WebSocket = require('faye-websocket');
-// const pg = require('pg');
+const pg = require('pg');
 
-function log(msg, ...rest) {
+function info(msg, ...rest) {
   console.info(`${new Date().toISOString()} ${msg}`, ...rest);
 }
 
-// parse incomming message in form: [clientId] command
+function err(msg, ...rest) {
+  console.error(`${new Date().toISOString()} ${msg}`, ...rest);
+}
+
+// parse incomming message in form: [cid]cmd
 const reCmd = /^(?:\[([^\]]+)\])?\s*(\S+)/;
 
 const upgradeHandler = (req, socket, head) => {
   if (WebSocket.isWebSocket(req)) {
-    log('Upgrade WebSocket', req.method, req.url);
+    info('Upgrade WebSocket', req.method, req.url);
     let ws = new WebSocket(req, socket, head);
-    let wsState = Object.create(null);
-    wsState.lastMessage = null;
+    ws.state = Object.create(null);
+    ws.state.sid = null; // persistent session, connections will not be lost
+    ws.state.db = null; // database connection
 
     ws.json = (json) => ws.send(JSON.stringify(json));
+    ws.error = (error) => {
+      err(error);
+      ws.json({error});
+    };
 
     ws.on('message', (event) => {
       const raw = event.data;
-      log('Received', raw);
+      info('Received', raw);
 
       // accept only strings
       if (typeof raw !== 'string') {
-        return ws.json({
-          error: 'Invalid input',
-        });
+        return ws.error('Invalid input');
       }
 
       // return empty JSON on empty input
@@ -35,13 +42,11 @@ const upgradeHandler = (req, socket, head) => {
       let message = null;
 
       // accept JSON input
-      if (raw[0] === '{') {
+      if (raw.startsWith('{')) {
         try {
           message = JSON.parse(raw);
         } catch(error) {
-          return ws.json({
-            error: 'Invalid JSON',
-          });
+          return ws.error('Invalid JSON input');
         }
       } else {
         const [, cid, cmd] = reCmd.exec(raw);
@@ -52,13 +57,16 @@ const upgradeHandler = (req, socket, head) => {
         }
       }
 
-      log(`[${message.cid}]`, message);
+      if (message.cmd && message.cmd.startsWith('\\')) {
+        // special commands
+      }
+
+      info(`[${message.cid}]`, message);
     });
 
     ws.on('close', (event) => {
-      log('close', event);
+      info('close', event);
       ws = null;
-      wsState = null;
     });
   }
 }
