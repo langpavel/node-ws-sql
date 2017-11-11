@@ -9,29 +9,6 @@ const server = http.createServer(app);
 
 const wsUpgradeHandler = require('./ws').upgradeHandler;
 
-// Initialize an express app with some security defaults
-app
-  .use(https)
-  .use(helmet());
-
-// Application-specific routes
-// Add your own routes here!
-app.get('/example-path', async (req, res, next) => {
-  res.json({ message: "Hello World!" });
-});
-
-// Serve static assets built by create-react-app
-app.use(express.static('build'));
-
-// If no explicit matches were found, serve index.html
-app.get('*', function(req, res){
-  res.sendFile(__dirname + '/build/index.html');
-});
-
-app
-  .use(notfound)
-  .use(errors);
-
 function https(req, res, next) {
   if (process.env.NODE_ENV === 'production') {
     const proto = req.headers['x-forwarded-proto'];
@@ -55,5 +32,27 @@ function errors(err, req, res, next) {
 
 server.on('upgrade', wsUpgradeHandler);
 
-server.listen(PORT, () => console.log(`Listening on ${PORT}`));
+// Initialize an express app with some security defaults
+app
+  .use(https)
+  .use(helmet());
 
+// Application-specific routes
+// Add your own routes here!
+app.get('/example-path', async (req, res, next) => {
+  res.json({ message: "Hello World!" });
+});
+
+// Serve static assets built by create-react-app
+app.use(express.static('build'));
+
+// If no explicit matches were found, serve index.html
+app.get('*', function(req, res){
+  res.sendFile(__dirname + '/build/index.html');
+});
+
+app
+  .use(notfound)
+  .use(errors);
+
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));

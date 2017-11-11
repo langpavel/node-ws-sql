@@ -1,4 +1,5 @@
 const WebSocket = require('faye-websocket');
+const pg = require('pg');
 
 function log(msg, ...rest) {
   console.info(`${new Date().toISOString()} ${msg}`, ...rest);
@@ -6,7 +7,7 @@ function log(msg, ...rest) {
 
 const upgradeHandler = (req, socket, head) => {
   if (WebSocket.isWebSocket(req)) {
-    log('Upgrade WebSocke', req.method, req.url);
+    log('Upgrade WebSocket', req.method, req.url);
     let ws = new WebSocket(req, socket, head);
     let wsState = Object.create(null);
     wsState.lastMessage = null;
