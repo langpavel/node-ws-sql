@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 // test start of command, fastest filter
-exports.startWith = '\\?';
+exports.startsWith = '\\?';
 
 // test full regexp, slower filter
 exports.test = /^\\\?$/;

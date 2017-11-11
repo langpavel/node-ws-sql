@@ -7,7 +7,7 @@ action is conditionally executed.
 
 ```js
 // test start of command, fastest filter
-exports.startWith: String;
+exports.startsWith: String;
 
 // test full regexp, slower filter
 exports.test: RegExp | (cmd: String) => Boolean;
