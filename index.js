@@ -1,9 +1,13 @@
+const http = require('http');
 const express = require('express');
 const helmet = require('helmet');
 const expressEnforcesSSL = require('express-enforces-ssl');
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+const server = http.createServer(app);
+
+const wsUpgradeHandler = require('./ws').upgradeHandler;
 
 // Initialize an express app with some security defaults
 app
@@ -49,4 +53,7 @@ function errors(err, req, res, next) {
   res.status(500).send('something went wrong');
 }
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+server.on('upgrade', wsUpgradeHandler);
+
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));
+
