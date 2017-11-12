@@ -7,7 +7,7 @@ exports.startsWith = '\\?';
 exports.test = /^\\\?$/;
 
 // group -- Group name in English, default to "others"
-exports.group = 'Help';
+exports.group = 'General';
 
 // description -- single line
 exports.description = 'Show help';
@@ -19,9 +19,10 @@ exports.help = `
 `;
 
 
-const md = fs.readFileSync(`${__dirname}/questionmark.md`);
+const md = fs.readFileSync(`${__dirname}/questionmark.md`, 'utf-8');
 
 // can do action, returning result -- next state
-exports.action = () => {
-  return { md };
+exports.action = (send) => {
+  send({ md });
+  return true;
 };

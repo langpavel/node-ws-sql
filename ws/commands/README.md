@@ -9,10 +9,11 @@ action is conditionally executed.
 // test start of command, fastest filter
 exports.startsWith: String;
 
-// test full regexp, slower filter
-exports.test: RegExp | (cmd: String) => Boolean;
+// test full regexp, slower filter, returns the longest match
+// result will be forwarded to action
+exports.test: RegExp | (cmd: String) => Array<String> | false;
 
-// group -- Group name in English, default to "others"
+// group -- Group name in English, default to "Others"
 exports.group: String;
 
 // description -- single line
@@ -22,7 +23,8 @@ exports.description: String;
 exports.help: String;
 
 // can do action, returning result -- next state
-exports.action: (state: Object, next: () => Promise) => Promise<Object>;
+// if action return false, SQL command will be executed instead
+exports.action: (send, message, match, session, ws) => Promise<Boolean>;
 ```
 
 ## Implemented:
@@ -133,7 +135,7 @@ This is exact output from `\?` command in **psql 10.1**
     
     Connection
 [ ]   \c[onnect] {[DBNAME|- USER|- HOST|- PORT|-] | conninfo}
-                             connect to new database (currently "langpavel")
+                             connect to new database (currently "$CURRENTDB")
 [ ]   \conninfo              display information about current connection
 [ ]   \encoding [ENCODING]   show or set client encoding
 [ ]   \password [USERNAME]   securely change the password for a user

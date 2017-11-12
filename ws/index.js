@@ -1,5 +1,6 @@
 const WebSocket = require('faye-websocket');
-const pg = require('pg');
+const commands = require('./commands');
+const sqlCommand = require('./sqlCommand');
 
 function info(msg, ...rest) {
   console.info(`${new Date().toISOString()} ${msg}`, ...rest);
@@ -16,17 +17,21 @@ const upgradeHandler = (req, socket, head) => {
   if (WebSocket.isWebSocket(req)) {
     info('Upgrade WebSocket', req.method, req.url);
     let ws = new WebSocket(req, socket, head);
-    ws.state = Object.create(null);
-    ws.state.sid = null; // persistent session, connections will not be lost
-    ws.state.db = null; // database connection
+    let session = Object.create(null);
+    session.sid = null; // persistent session, connections will not be lost
+    session.pg = null; // database connection
 
-    ws.json = (json) => ws.send(JSON.stringify(json));
+    ws.json = (json) => {
+      const str = JSON.stringify(json);
+      info(`Sending ${str.length}`);
+      return ws.send(str);
+    }
     ws.error = (error) => {
       err(error);
       ws.json({error});
     };
 
-    ws.on('message', (event) => {
+    ws.on('message', async (event) => {
       const raw = event.data;
       info('Received', raw);
 
@@ -57,16 +62,38 @@ const upgradeHandler = (req, socket, head) => {
         }
       }
 
-      if (message.cmd && message.cmd.startsWith('\\')) {
-        // special commands
+      // send response with clientId
+      const send = data => {
+        if (typeof data === 'string') {
+          ws.json({
+            cid: message.cid,
+            text: data,
+          });
+        } else {
+          ws.json({
+            ...data,
+            cid: message.cid,
+          });
+        }
       }
 
-      info(`[${message.cid}]`, message);
+      try {
+        const processed = await commands.execute(send, message, session, ws);
+        if (processed) {
+          return;
+        } else if (processed === false) {
+          info(`[${message.cid}] going to execute SQL`);
+          await sqlCommand(send, message, session);
+        }
+      } catch (error) {
+        send({error});
+      }
     });
 
     ws.on('close', (event) => {
       info('close', event);
       ws = null;
+      session = null;
     });
   }
 }
