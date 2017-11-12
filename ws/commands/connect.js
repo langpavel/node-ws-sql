@@ -24,8 +24,8 @@ exports.action = async (send, message, match, session, ws) => {
     session.pg.end();
     session.pg = null;
   }
-  const connStr = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)$/)[1] || undefined;
-  const client = new pg.Client(connStr);
+  const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)$/)[1] || undefined;
+  const client = new pg.Client({connectionString});
   await client.connect();
   session.pg = client;
   send("Connected");
