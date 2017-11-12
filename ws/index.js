@@ -90,10 +90,10 @@ const upgradeHandler = (req, socket, head) => {
       }
     });
 
-    ws.on('close', (event) => {
-      info('close', event);
+    ws.on('close', (e) => {
       ws = null;
       session = null;
+      info('WebSocket closed');
     });
   }
 }
