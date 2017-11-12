@@ -1,5 +1,7 @@
 import React from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
+import { connect } from 'react-redux';
+import sendCommand from '../../redux/actions/sendCommand';
 import './Prompt.css';
 
 class Prompt extends React.Component {
@@ -12,18 +14,22 @@ class Prompt extends React.Component {
     if (this.input !== input) {
       this.input = input;
       input.onkeypress = (e) => {
-        console.log(e);
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          this.send();
+        }
       }
     }
   }
 
-  handleSubmit = (e) => {
-    console.log('SUBMIT!', e);
+  send = (e) => {
+    if (e) e.preventDefault();
+    this.props.sendCommand(this.input.value);
+    this.input.value = '';
   }
 
   render() {
     return (
-      <form className="prompt" onSubmit={this.handleSubmit}>
+      <form className="prompt" onSubmit={this.send}>
         <TextareaAutosize
           defaultValue="\connect"
           inputRef={this.setRef}
@@ -37,4 +43,11 @@ class Prompt extends React.Component {
   }
 }
 
-export default Prompt;
+const mapState = (state) => ({
+
+});
+const mapDispatch = ({
+  sendCommand
+})
+
+export default connect(mapState, mapDispatch)(Prompt);

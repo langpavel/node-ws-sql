@@ -1,5 +1,11 @@
-body {
+html, body {
+  display: block;
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: monospace;
+  min-height: 100%;
+}
+
+#root {
+  min-height: 100%;
 }
