@@ -21,10 +21,12 @@ exports.help = '\c[onnect] <Connection String>';
 exports.action = async (send, message, match, session, ws) => {
   if (session.pg) {
     send("Your previous connection will be disconnected");
-    session.pg.end();
-    session.pg = null;
+    try {
+      session.pg.end();
+      session.pg = null;
+    } catch (err) {  }
   }
-  const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)$/)[1] || undefined;
+  const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)\s*$/)[1] || process.env.DATABASE_URL;
   const client = new pg.Client({connectionString});
   await client.connect();
   session.pg = client;
