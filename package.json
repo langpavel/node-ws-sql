@@ -1,8 +1,9 @@
 {
-  "name": "psql-ws",
-  "version": "0.0.1",
+  "name": "ws-sql",
+  "version": "0.0.0",
   "private": true,
   "dependencies": {
+    "dotenv": "^4.0.0",
     "express": "^4.15.4",
     "express-enforces-ssl": "^1.1.0",
     "faye-websocket": "^0.11.1",
@@ -22,7 +23,7 @@
     "concurrently": "^3.5.0"
   },
   "scripts": {
-    "start": "concurrently \"react-scripts start\" \"node index\"",
+    "start": "concurrently \"react-scripts start\" \"node server\"",
     "heroku-postbuild": "react-scripts build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
