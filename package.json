@@ -10,6 +10,7 @@
     "pg": "^7.4.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
+    "react-json-view": "^1.13.3",
     "react-redux": "^5.0.6",
     "react-scripts": "1.0.17",
     "react-textarea-autosize": "^5.2.0",

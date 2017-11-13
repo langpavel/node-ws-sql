@@ -12,7 +12,12 @@ psql.addEventListener('open', (e) => {
   console.info('PSQL opened');
 });
 psql.addEventListener('message', (e) => {
-  console.info('PSQL message', JSON.parse(e.data));
+  const response = JSON.parse(e.data);
+  console.info('PSQL message', response);
+  store.dispatch({
+    type: 'COMMAND_RESPONSE',
+    payload: response,
+  })
 });
 psql.addEventListener('error', (e) => {
   console.error('PSQL error', e);

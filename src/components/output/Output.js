@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import ReactJson from 'react-json-view'
 import './Output.css';
 
 class Output extends React.Component {
@@ -7,10 +8,14 @@ class Output extends React.Component {
   render() {
     return (
       <div className="output">
-        There all your output will be
+        <ReactJson src={this.props.commands} />
       </div>
     )
   }
 }
 
-export default Output;
+const mapState = (state) => ({
+  commands: state.commands,
+})
+
+export default connect(mapState)(Output);
