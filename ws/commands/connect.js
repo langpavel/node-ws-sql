@@ -22,6 +22,14 @@ exports.action = async (send, message, match, session, ws) => {
   const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)\s*$/)[1] || process.env.DATABASE_URL;
   const client = new pg.Client({connectionString});
 
+  client.on('notice', (notice) => {
+    session.send({ notice });
+  });
+
+  client.on('notification', (notification) => {
+    session.send(notification);
+  });
+
   await client.connect();
 
   if (session.pg) {

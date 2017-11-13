@@ -5,13 +5,18 @@ async function executeSql(send, msg, session) {
   try {
     const client = session.pg;
     const { cid, cmd, ...queryConfig } = msg;
+    queryConfig.rowMode = 'array';
 
     console.info(`[${cid}] Query config`, queryConfig);
+    const ts = Date.now();
     const start = process.hrtime();
     const result = await client.query(queryConfig, msg.values);
-    result.duration = process.hrtime(start);
-
-    send(result);
+    const t = process.hrtime(start);
+    t.unshift(ts);
+    send({
+      t,
+      result,
+    });
   } catch (error) {
     console.info(`[${cid}] error`, error);
     send({error});

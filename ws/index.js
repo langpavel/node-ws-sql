@@ -20,15 +20,16 @@ const upgradeHandler = (req, socket, head) => {
     let session = Object.create(null);
     session.sid = null; // persistent session, connections will not be lost
     session.pg = null; // database connection
-
-    ws.json = (json) => {
+    
+    session.send = (json) => {
       const str = JSON.stringify(json);
       info(`Sending ${str.length}`);
       return ws.send(str);
     }
+
     ws.error = (error) => {
       err(error);
-      ws.json({error});
+      session.send({error});
     };
 
     ws.on('message', async (event) => {
@@ -42,7 +43,7 @@ const upgradeHandler = (req, socket, head) => {
 
       // return empty JSON on empty input
       if (!raw.length) {
-        return ws.json({});
+        return session.send({});
       }
       let message = null;
 
@@ -65,14 +66,14 @@ const upgradeHandler = (req, socket, head) => {
       // send response with clientId
       const send = data => {
         if (typeof data === 'string') {
-          ws.json({
+          session.send({
             cid: message.cid,
             text: data,
           });
         } else {
-          ws.json({
-            ...data,
+          session.send({
             cid: message.cid,
+            ...data,
           });
         }
       }
@@ -91,8 +92,9 @@ const upgradeHandler = (req, socket, head) => {
     });
 
     ws.on('close', (e) => {
-      ws = null;
       session = null;
+      session.send = Function.prototype; // same as (() => undefined);
+      ws = null;
       info('WebSocket closed');
     });
   }
