@@ -4784,6 +4784,10 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
 
+permessage-deflate@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/permessage-deflate/-/permessage-deflate-0.1.6.tgz#581f1cedfbd440fac47d0777be88633386b992de"
+
 pg-connection-string@0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-0.1.3.tgz#da1847b20940e42ee1492beaf65d49d91b245df7"

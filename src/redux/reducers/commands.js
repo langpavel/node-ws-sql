@@ -1,3 +1,10 @@
+function handleCommand(oldState, { payload }) {
+  const state = {...oldState};
+  state.list = [...state.list];
+  return state;
+}
+
+
 export default function commandsReducer(state = {list: []}, action) {
   const { type, payload } = action;
   switch (type) {

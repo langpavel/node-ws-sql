@@ -1,4 +1,5 @@
 const WebSocket = require('faye-websocket');
+const deflate = require('permessage-deflate');
 const commands = require('./commands');
 const sqlCommand = require('./sqlCommand');
 
@@ -16,15 +17,22 @@ const reCmd = /^(?:\[([^\]]+)\])?\s*(\S+)/;
 const upgradeHandler = (req, socket, head) => {
   if (WebSocket.isWebSocket(req)) {
     info('Upgrade WebSocket', req.method, req.url);
-    let ws = new WebSocket(req, socket, head);
+    let ws = new WebSocket(req, socket, head, [], {
+      extensions: [deflate]
+    });
     let session = Object.create(null);
     session.sid = null; // persistent session, connections will not be lost
     session.pg = null; // database connection
     
     session.send = (json) => {
       const str = JSON.stringify(json);
-      info(`Sending ${str.length}`);
-      return ws.send(str);
+      const cid = json.cid ? `[${json.cid}] ` : '';
+      const sendResult = ws.send(str);
+      if (str.length <= 220)
+        info(`${cid}>> ${str}`, sendResult);
+      else
+        info(`${cid}>>>> Sent ${str.length} chars`, sendResult);
+      return sendResult;
     }
 
     ws.error = (error) => {
@@ -92,8 +100,8 @@ const upgradeHandler = (req, socket, head) => {
     });
 
     ws.on('close', (e) => {
-      session = null;
       session.send = Function.prototype; // same as (() => undefined);
+      session = null;
       ws = null;
       info('WebSocket closed');
     });

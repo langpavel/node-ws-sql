@@ -19,8 +19,8 @@ exports.help = '\c[onnect] <Connection String>';
 // can do action, returning result -- next state
 // if action return false, SQL command will be executed instead
 exports.action = async (send, message, match, session, ws) => {
-  const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)\s*$/)[1] || process.env.DATABASE_URL;
-  const client = new pg.Client({connectionString});
+  const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)\s*$/)[1] || process.env.WS_SQL_DEFAULT;
+  const client = connectionString ? new pg.Client({ connectionString }) : new pg.Client();
 
   client.on('notice', (notice) => {
     session.send({ notice });
@@ -31,6 +31,14 @@ exports.action = async (send, message, match, session, ws) => {
   });
 
   await client.connect();
+
+  client.connection.on('readyForQuery', msg => {
+    session.send({ ready: msg.status });
+  });
+
+  // client.connection.on('message', msg => {
+  //   console.info('>>>', msg);
+  // });
 
   if (session.pg) {
     send("Your previous connection will be disconnected");

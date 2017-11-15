@@ -2,6 +2,10 @@ const http = require('http');
 const express = require('express');
 const helmet = require('helmet');
 const expressEnforcesSSL = require('express-enforces-ssl');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 const PORT = process.env.PORT || 3001;
 
 const app = express();

@@ -11,7 +11,6 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">psql</h1>
-          <a className="nodeknockout" href="https://www.nodeknockout.com/entries/313-pgsql-web-interface" target="_blank">Vote !</a>
         </header>
         <Output />
         <Prompt />
