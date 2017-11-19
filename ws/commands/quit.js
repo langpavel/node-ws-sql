@@ -14,7 +14,7 @@ exports.description = 'Close WebSocket connection';
 // exports.help: String;
 
 // can do action, returning result -- next state
-exports.action = (send, message, match, session, ws) => {
-  ws.close();
+exports.action = (send, message, match, session) => {
+  session.close();
   return true;
 }

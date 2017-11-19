@@ -4,6 +4,10 @@ const helmet = require('helmet');
 const expressEnforcesSSL = require('express-enforces-ssl');
 const dotenv = require('dotenv');
 
+process.on('unhandledRejection', (reason, p) => {
+  console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+});
+
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;

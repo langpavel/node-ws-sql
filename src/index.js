@@ -15,7 +15,7 @@ psql.addEventListener('message', (e) => {
   const response = JSON.parse(e.data);
   console.info('PSQL message', response);
   store.dispatch({
-    type: 'COMMAND_RESPONSE',
+    type: response.T ? `WS_${response.T}` : 'WS_RESPONSE',
     payload: response,
   })
 });

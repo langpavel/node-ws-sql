@@ -24,7 +24,7 @@ exports.help: String;
 
 // can do action, returning result -- next state
 // if action return false, SQL command will be executed instead
-exports.action: (send, message, match, session, ws) => Promise<Boolean>;
+exports.action: (send, message, match, session) => Promise<Boolean>;
 ```
 
 ## Implemented:

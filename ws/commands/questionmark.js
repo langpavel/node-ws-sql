@@ -1,4 +1,5 @@
 const fs = require('fs');
+const constants = require('../constants');
 
 // test start of command, fastest filter
 exports.startsWith = '\\?';
@@ -23,6 +24,9 @@ const md = fs.readFileSync(`${__dirname}/questionmark.md`, 'utf-8');
 
 // can do action, returning result -- next state
 exports.action = (send) => {
-  send({ md });
+  send({
+    T: constants.TEXT,
+    md
+  });
   return true;
 };

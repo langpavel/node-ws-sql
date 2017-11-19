@@ -71,7 +71,7 @@ function loadCommands(dir) {
 const commands = loadCommands(__dirname);
 console.info(`Commands (${commands.length}) loaded`);
 
-async function execute(send, msg, session, ws) {
+async function execute(send, msg, session) {
   if (!msg.cmd) {
     return false;
   }
@@ -89,7 +89,7 @@ async function execute(send, msg, session, ws) {
       ) ? possibleResult : previousMatch;
     }, null);
   if (!command) return false;
-  return command.module.action(send, msg, command.match, session, ws)
+  return command.module.action(send, msg, command.match, session)
 }
 
 exports.commands = commands;

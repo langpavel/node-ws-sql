@@ -6,7 +6,7 @@ export default function sendCommand(cmd) {
       type: 'NEW_CID'
     });
     const state = getState();
-    const cid = state.clientId;
+    const cid = state.clientId.toString();
 
     dispatch({
       type: 'COMMAND',

@@ -1,4 +1,5 @@
 const pg = require('pg');
+const constants = require('../constants');
 
 // test start of command, fastest filter
 exports.startsWith = '\\c';
@@ -18,22 +19,31 @@ exports.help = '\c[onnect] <Connection String>';
 
 // can do action, returning result -- next state
 // if action return false, SQL command will be executed instead
-exports.action = async (send, message, match, session, ws) => {
+exports.action = async (send, message, match, session) => {
   const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)\s*$/)[1] || process.env.WS_SQL_DEFAULT;
   const client = connectionString ? new pg.Client({ connectionString }) : new pg.Client();
 
   client.on('notice', (notice) => {
-    session.send({ notice });
+    send({
+      T: constants.SQL_NOTICE,
+      text: notice,
+    });
   });
 
   client.on('notification', (notification) => {
-    session.send(notification);
+    send({
+      T: constants.SQL_NOTIFICATION,
+      ...notification
+    });
   });
 
   await client.connect();
 
   client.connection.on('readyForQuery', msg => {
-    session.send({ ready: msg.status });
+    send({
+      T: constants.SQL_READY_FOR_QUERY,
+      ready: msg.status
+    });
   });
 
   // client.connection.on('message', msg => {
@@ -47,7 +57,7 @@ exports.action = async (send, message, match, session, ws) => {
     }).catch(err => null);
     session.pg = null;
   } else {
-    ws.on('close', () => {
+    session.on('close', () => {
       if (session.pg) {
         session.pg.end().then(() => {
           console.info('Connection released');

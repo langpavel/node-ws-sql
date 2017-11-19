@@ -1,7 +1,8 @@
 const pg = require('pg');
+const constants = require('./constants')
 
 async function executeSql(send, msg, session) {
-  if (!session.pg) return send({ error: 'No active connection' });
+  if (!session.pg) return send(constants.ERROR, { message: 'No active connection' });
   try {
     const client = session.pg;
     const { cid, cmd, ...queryConfig } = msg;
@@ -18,6 +19,7 @@ async function executeSql(send, msg, session) {
 
     t.unshift(ts);
     send({
+      T: constants.SQL_RESPONSE,
       t,
       cmdType: result.command,
       fields: result.fields,
@@ -26,8 +28,7 @@ async function executeSql(send, msg, session) {
       oid: result.oid !== null ? result.oid : undefined,
     });
   } catch (error) {
-    console.info(`[${cid}] error`, error);
-    send({ error });
+    send(error);
   }
 }
 
