@@ -37,14 +37,18 @@ exports.action = async (send, message, match, session) => {
     });
   });
 
-  await client.connect();
-
+  // UNDOCUMENTED
+  if (!client.connection)
+    throw new Error('ASSERTION CHANGED, connection is not available before connect');
+  // really, connection is available before connect.
   client.connection.on('readyForQuery', msg => {
     send({
       T: constants.SQL_READY_FOR_QUERY,
       ready: msg.status
     });
   });
+
+  await client.connect();
 
   // client.connection.on('message', msg => {
   //   console.info('>>>', msg);

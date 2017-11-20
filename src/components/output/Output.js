@@ -8,14 +8,14 @@ class Output extends React.Component {
   render() {
     return (
       <div className="output">
-        <ReactJson src={this.props.commands} />
+        <ReactJson src={this.props.state} />
       </div>
     )
   }
 }
 
 const mapState = (state) => ({
-  commands: state.commands,
+  state,
 })
 
 export default connect(mapState)(Output);
