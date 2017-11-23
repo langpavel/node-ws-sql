@@ -1,5 +1,4 @@
 const EventEmitter = require('events');
-const serializeError = require('serialize-error');
 const constants = require('./constants');
 const commands = require('./commands');
 const sqlCommand = require('./sqlCommand');
@@ -14,6 +13,7 @@ class Session extends EventEmitter {
     this._ws = null; // websocket
     this._sid = null; // persistent session, connections will not be lost
     this.pg = null; // database connection, driven externally
+    this.currentCid = undefined;
     if (ws) this._attachWs(ws);
   }
 
@@ -22,8 +22,25 @@ class Session extends EventEmitter {
       throw new Error('session.send requires exactly one argument');
     if (json instanceof Error) {
       json = {
-        T: 'E',
-        error: serializeError(json),
+        T: constants.ERROR,
+        cid: json.cid,
+        message: json.message,
+        severity: json.severity,
+        code: json.code,
+        detail: json.detail,
+        hint: json.hint,
+        position: json.position,
+        internalPosition: json.internalPosition,
+        internalQuery: json.internalQuery,
+        where: json.where,
+        schema: json.schema,
+        table: json.table,
+        column: json.column,
+        dataType: json.dataType,
+        constraint: json.constraint,
+        file: json.file,
+        line: json.line,
+        routine: json.routine,
       };
     } else {
       if (!json.T) throw new Error('T (as type) is required');
@@ -43,7 +60,7 @@ class Session extends EventEmitter {
     err(error);
     if (typeof error === 'string') {
       this.send({
-        T: 'E',
+        T: constants.ERROR,
         message: error,
       });
     } else {
@@ -93,11 +110,8 @@ class Session extends EventEmitter {
       // send response with clientId
       const send = data => {
         if (data instanceof Error) {
-          this.send({
-            T: constants.ERROR,
-            cid: message.cid,
-            error: data.message,
-          });
+          data.cid = message.cid;
+          this.send(data);
         } else if (typeof data === 'string') {
           this.send({
             T: constants.TEXT,
@@ -113,6 +127,7 @@ class Session extends EventEmitter {
       }
 
       try {
+        this.currentCid = message.cid;
         const processed = await commands.execute(send, message, this);
         if (processed) {
           return;
@@ -123,6 +138,7 @@ class Session extends EventEmitter {
       } catch (error) {
         send(error);
       }
+      this.currentCid = undefined;
     });
 
     ws.on('close', (e) => {

@@ -26,14 +26,31 @@ exports.action = async (send, message, match, session) => {
   client.on('notice', (notice) => {
     send({
       T: constants.SQL_NOTICE,
-      text: notice,
+      cid: session.currentCid,
+      message: notice.message,
+      severity: notice.severity,
+      code: notice.code,
+      detail: notice.detail,
+      hint: notice.hint,
+      position: notice.position,
+      internalPosition: notice.internalPosition,
+      internalQuery: notice.internalQuery,
+      where: notice.where,
+      schema: notice.schema,
+      table: notice.table,
+      column: notice.column,
+      dataType: notice.dataType,
+      constraint: notice.constraint,
+      file: notice.file,
+      line: notice.line,
+      routine: notice.routine,
     });
   });
 
   client.on('notification', (notification) => {
     send({
       T: constants.SQL_NOTIFICATION,
-      ...notification
+      ...notification,
     });
   });
 
