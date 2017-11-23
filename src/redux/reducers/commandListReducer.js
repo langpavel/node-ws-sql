@@ -8,7 +8,6 @@ export default function commandListReducer(state = [], action) {
         ...state,
         { ...payload },
       ];
-      break;
 
     default:
       return state;

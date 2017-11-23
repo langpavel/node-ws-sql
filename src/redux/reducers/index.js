@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import clientId from './clientId';
-import transactionState from './transactionState';
-import commands from './commands';
-import commandList from './commandList';
+import clientId from './clientIdReducer';
+import transactionState from './transactionStateReducer';
+import commands from './commandsReducer';
+import commandList from './commandListReducer';
 
 export default combineReducers({
   clientId,
