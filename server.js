@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 const server = http.createServer(app);
 
-const wsUpgradeHandler = require('./ws').upgradeHandler;
+const wsUpgradeHandler = require('./server/wsUpgradeHandler');
 
 function https(req, res, next) {
   if (process.env.NODE_ENV === 'production') {

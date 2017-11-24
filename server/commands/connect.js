@@ -1,3 +1,4 @@
+const assert = require('assert');
 const pg = require('pg');
 const constants = require('../constants');
 
@@ -23,47 +24,50 @@ exports.action = async (send, message, match, session) => {
   const connectionString = message.text.match(/^\s*\\c(?:onnect)?\s*(.*)\s*$/)[1] || process.env.WS_SQL_DEFAULT;
   const client = connectionString ? new pg.Client({ connectionString }) : new pg.Client();
 
-  client.on('notice', (notice) => {
-    send({
-      T: constants.SQL_NOTICE,
-      cid: session.currentCid,
-      message: notice.message,
-      severity: notice.severity,
-      code: notice.code,
-      detail: notice.detail,
-      hint: notice.hint,
-      position: notice.position,
-      internalPosition: notice.internalPosition,
-      internalQuery: notice.internalQuery,
-      where: notice.where,
-      schema: notice.schema,
-      table: notice.table,
-      column: notice.column,
-      dataType: notice.dataType,
-      constraint: notice.constraint,
-      file: notice.file,
-      line: notice.line,
-      routine: notice.routine,
-    });
-  });
+  client.on('notice', (notice) => send({
+    T: constants.SQL_NOTICE,
+    cid: session.currentCid || undefined,
+    message: notice.message,
+    severity: notice.severity,
+    code: notice.code,
+    detail: notice.detail,
+    hint: notice.hint,
+    position: notice.position,
+    internalPosition: notice.internalPosition,
+    internalQuery: notice.internalQuery,
+    where: notice.where,
+    schema: notice.schema,
+    table: notice.table,
+    column: notice.column,
+    dataType: notice.dataType,
+    constraint: notice.constraint,
+    file: notice.file,
+    line: notice.line,
+    routine: notice.routine,
+  }));
 
-  client.on('notification', (notification) => {
-    send({
-      T: constants.SQL_NOTIFICATION,
-      ...notification,
-    });
-  });
+  client.on('notification', (notification) => send({
+    T: constants.SQL_NOTIFICATION,
+    ...notification,
+  }));
 
-  // UNDOCUMENTED
-  if (!client.connection)
-    throw new Error('ASSERTION CHANGED, connection is not available before connect');
-  // really, connection is available before connect.
-  client.connection.on('readyForQuery', msg => {
+  const con = client.connection;
+  assert(con, 'connection is not available before connect');
+
+  con.on('parameterStatus', msg => send({
+    T: constants.SQL_PARAMETER_STATUS,
+    n: msg.parameterName,
+    v: msg.parameterValue,
+  }));
+
+  con.on('readyForQuery', msg => {
     send({
       T: constants.SQL_READY_FOR_QUERY,
-      ready: msg.status
-    });
-  });
+      cid: session.currentCid || undefined,
+      s: msg.status,
+    });  
+    session.currentCid = null;
+  });  
 
   await client.connect();
 
@@ -72,16 +76,15 @@ exports.action = async (send, message, match, session) => {
   // });
 
   if (session.pg) {
-    send("Your previous connection will be disconnected");
     session.pg.end().then(() => {
-      console.info('Connection released');
+      send('Your previous connection was released');
     }).catch(err => null);
     session.pg = null;
   } else {
     session.on('close', () => {
       if (session.pg) {
         session.pg.end().then(() => {
-          console.info('Connection released');
+          send('Connection released');
         }).catch(err => null);
       }
     });
@@ -89,4 +92,5 @@ exports.action = async (send, message, match, session) => {
 
   session.pg = client;
   send("Connected");
+  return true;
 };

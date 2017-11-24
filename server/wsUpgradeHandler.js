@@ -13,4 +13,4 @@ const upgradeHandler = (req, socket, head) => {
   }
 }
 
-exports.upgradeHandler = upgradeHandler;
+module.exports = upgradeHandler;

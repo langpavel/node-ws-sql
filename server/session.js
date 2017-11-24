@@ -2,7 +2,7 @@ const EventEmitter = require('events');
 const constants = require('./constants');
 const commands = require('./commands');
 const sqlCommand = require('./sqlCommand');
-const debugWs = require('debug')('ws-sql:ws');
+const debugSession = require('debug')('ws-sql:session');
 
 // parse incomming message in form: [cid]cmd
 const reCmd = /^(?:\[([^\]]+)\])?\s*(\S+)/;
@@ -13,7 +13,7 @@ class Session extends EventEmitter {
     this._ws = null; // websocket
     this._sid = null; // persistent session, connections will not be lost
     this.pg = null; // database connection, driven externally
-    this.currentCid = undefined;
+    this.currentCid = null;
     if (ws) this._attachWs(ws);
   }
 
@@ -23,7 +23,7 @@ class Session extends EventEmitter {
     if (json instanceof Error) {
       json = {
         T: constants.ERROR,
-        cid: json.cid,
+        cid: json.cid || this.currentCid || undefined,
         message: json.message,
         severity: json.severity,
         code: json.code,
@@ -45,15 +45,18 @@ class Session extends EventEmitter {
     } else {
       if (!json.T) throw new Error('T (as type) is required');
     }
+    if (!json.cid && this.currentCid) {
+      json.cid = this.currentCid;
+    }
     const str = JSON.stringify(json);
+
     const type = json.T || '?';
     const cid = json.cid ? `[${json.cid}] ` : '';
-    const sendResult = this._ws.send(str);
+    this._ws.send(str);
     if (str.length <= 220)
-      debugWs(`${cid}>> ${type} ${str}`, sendResult);
+      debugSession(`${cid}>> ${type} ${str}`);
     else
-      debugWs(`${cid}>>>> ${type} Sent ${str.length} chars`, sendResult);
-    return sendResult;
+      debugSession(`${cid}>>>> ${type} Sent ${str.length} chars`);
   }
 
   sendError(error) {
@@ -78,7 +81,7 @@ class Session extends EventEmitter {
     this._ws = ws;
     ws.on('message', async (event) => {
       const raw = event.data;
-      debugWs('Received', raw);
+      debugSession('Received', raw);
 
       // accept only strings
       if (typeof raw !== 'string') {
@@ -132,22 +135,22 @@ class Session extends EventEmitter {
         if (processed) {
           return;
         } else if (processed === false) {
-          debugWs(`[${message.cid}] going to execute SQL`);
+          debugSession(`[${message.cid}] going to execute SQL: ${message.text}`);
           await sqlCommand(send, message, this);
         }
       } catch (error) {
         send(error);
       }
-      this.currentCid = undefined;
+      this.currentCid = null;
     });
 
     ws.on('close', (e) => {
-      debugWs('WebSocket closed');
+      debugSession('WebSocket closed');
       this._detachWs(ws);
     });
 
     ws.on('error', (e) => {
-      // This is debugWsrmational only, no need fo action…
+      // This is debugSessionrmational only, no need fo action…
       err('WebSocket error', e);
     });
   }

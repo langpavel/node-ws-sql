@@ -21,6 +21,7 @@ class CommandOutput extends React.Component {
           name="Responses"
           collapseStringsAfterLength={120}
           displayDataTypes={false}
+          collapsed
         />
       </div>
     )

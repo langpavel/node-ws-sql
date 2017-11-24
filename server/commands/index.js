@@ -30,6 +30,13 @@ function loadCommands(dir) {
     .reduce((modules, name) => {
       try {
         const module = require(name);
+
+        // if module decide itself as disabled, skip 
+        if (module.disabled) {
+          console.info(`DISABLED: '${name}'`);
+          return modules;
+        }
+
         if (!module.startsWith || !module.test) {
           throw new Error('module does not export `startsWith` or `test`');
         }
@@ -54,6 +61,7 @@ function loadCommands(dir) {
         modules.push(module);
       } catch(err) {
         console.error(`Cannot load module ${name}:`, err.message);
+        throw err;
       }
       return modules;
     }, [])
@@ -89,7 +97,7 @@ async function execute(send, msg, session) {
       ) ? possibleResult : previousMatch;
     }, null);
   if (!command) return false;
-  return command.module.action(send, msg, command.match, session)
+  return command.module.action(send, msg, command.match, session);
 }
 
 exports.commands = commands;
