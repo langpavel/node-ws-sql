@@ -27,6 +27,10 @@ class CustomQuery {
   submit(con) {
     console.log('SQL:', this.text);
     con.query(this.text);
+    send({
+      T: constants.SQL_READY_FOR_QUERY,
+      s: 'W',
+    });
   }
 
   handleRowDescription(msg) {

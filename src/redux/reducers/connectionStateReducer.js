@@ -18,15 +18,9 @@ export default function connectionStateReducer(state = defaultState, action) {
       const readyState = payload.ready;
       return {
         connected: readyState !== '?',
-        inQuery: false,
+        inQuery: readyState === 'W',
         inTransaction: readyState === 'T' || readyState === 'E',
         state: readyState,
-      };
-    }
-    case 'COMMAND': {
-      return {
-        ...state,
-        inQuery: true,
       };
     }
     default:
