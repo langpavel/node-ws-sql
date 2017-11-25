@@ -15,7 +15,7 @@ export default function connectionStateReducer(state = defaultState, action) {
   const { type, payload } = action;
   switch (type) {
     case 'WS_Z': {
-      const readyState = payload.ready;
+      const readyState = payload.s;
       return {
         connected: readyState !== '?',
         inQuery: readyState === 'W',

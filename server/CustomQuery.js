@@ -27,7 +27,7 @@ class CustomQuery {
   submit(con) {
     console.log('SQL:', this.text);
     con.query(this.text);
-    send({
+    this.send({
       T: constants.SQL_READY_FOR_QUERY,
       s: 'W',
     });
