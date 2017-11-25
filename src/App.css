@@ -8,9 +8,7 @@ body {
 }
 
 .App-logo {
-  height: 48px;
-  left: 5px;
-  top: 5px;
+  margin: 0 5px;
 }
 
 .App-header {
