@@ -1,6 +1,7 @@
+const debugSQL = require('debug')('ws-sql:SQL');
 const constants = require('./constants');
 
-const MAX_ROW_BUFFER_LENGTH = 100;
+const MAX_ROW_BUFFER_LENGTH = 500;
 
 class CustomQuery {
   // Supporting only simple queries
@@ -11,6 +12,7 @@ class CustomQuery {
     this.rowBuffer = [];
     this.serverRows = 0;
     this.serverBytes = 0;
+    this.timeHrStart = null;
   }
 
   flushRowBuffer() {
@@ -25,21 +27,42 @@ class CustomQuery {
 
   // Submitable interface
   submit(con) {
-    console.log('SQL:', this.text);
+    debugSQL(this.text);
+
     con.query(this.text);
+    // to be fair, count time after request was queued to the socket
+    const t = Date.now();
+    this.timeHrStart = process.hrtime();
+
     this.send({
       T: constants.SQL_READY_FOR_QUERY,
+      t,
       s: 'W',
     });
+
+    // This does not work on simple query
+    // this._flushTimeout = setTimeout(() => {
+    //   con.flush();
+    //   debugSQL('flush send on the wire');
+    // }, 200);
   }
 
   handleRowDescription(msg) {
-    this.flushRowBuffer();
+    const t = process.hrtime(this.timeHrStart);
+    this.rowBuffer = [];
     this.serverBytes = msg.length;
     this.serverRows = 0;
-    msg.T = constants.SQL_ROW_DESCRIPTION;
     msg.name = undefined;
-    this.send(msg);
+    this.send({
+      T: constants.SQL_ROW_DESCRIPTION,
+      t,
+      f: msg.fields,
+    });
+
+    // if (this._flushTimeout) {
+    //   clearTimeout(this._flushTimeout);
+    //   this._flushTimeout = null;
+    // }
   }
 
   handleDataRow(msg) {
@@ -52,14 +75,16 @@ class CustomQuery {
   }
 
   handleCommandComplete(msg, con) {
+    const t = process.hrtime(this.timeHrStart);
     this.flushRowBuffer();
-    let cmd;
-    if (msg) cmd = msg.text;
+    let c;
+    if (msg) c = msg.text;
     this.send({
       T: constants.SQL_COMMAND_COMPLETE,
-      rows: this.serverRows,
-      bytes: this.serverBytes,
-      cmd,
+      t,
+      c,
+      r: this.serverRows,
+      b: this.serverBytes,
     });
     if (this.isPreparedStatement) con.sync();
   }
@@ -80,14 +105,17 @@ class CustomQuery {
 
   // portals are connected with cursors
   handlePortalSuspended(con) {
+    debugSQL('TODO: handlePortalSuspended');
     this.send('TODO: handlePortalSuspended');
   }
 
   handleCopyInResponse(con) {
+    debugSQL('TODO: handleCopyInResponse');
     this.send('TODO: handleCopyInResponse');
   }
 
   handleCopyData(msg, con) {
+    debugSQL('TODO: handleCopyData');
     this.send('TODO: handleCopyData');
   }
 
