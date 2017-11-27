@@ -6,8 +6,6 @@ const defaultState = {
   tables: {},
   // string reference to table which is currently received from socket
   currentTable: null,
-  // sent, enqueued statements
-  pendingList: [],
 };
 
 export default function outputReducer(state = defaultState, action) {
@@ -51,7 +49,7 @@ export default function outputReducer(state = defaultState, action) {
 
     // SQL_ROW_DESCRIPTION
     case 'WS_T': {
-      const { list, currentTable } = state;
+      const { list, tables, currentTable } = state;
       if (currentTable !== null) {
         console.error('currentTable expected to be bull in reduce, found this:', currentTable);
       }
@@ -61,21 +59,69 @@ export default function outputReducer(state = defaultState, action) {
       const newTable = {
         luid: meta.luid,
         columns: payload.f,
-        rows: 0,
-        bytes: 0,
+        loading: true,
+        rowCount: 0,
+        bytes: null,
+        rows: [],
       }
 
       return {
         ...state,
-        currentTable: {
-        }
+        list: [
+          ...list,
+          { table: tableId },
+        ],
+        tables: {
+          ...tables,
+          [tableId]: newTable,
+        },
+        currentTable: tableId,
       };
     }
-    // SQL_RESPONSE
-    case 'WS_D':
+
+    case 'WS_D': {
+      // MUTABLE and this is not a bug
+      // this reducer case is special...
+      // you really don't want re-render whole table
+      // just because of *ONLY* appended rows..
+      // everything will be fixed after SQL_COMMAND_COMPLETE :-)
+      const { r } = payload;
+      const { currentTable, tables } = state;
+      const table = tables[currentTable];
+      if (!currentTable || !table) {
+        console.error('Hey, what I can do with this rows? I don\'t know context!', r);
+      }
+      // this is the evil :-)
+      // state is in fact untouched
+      table.rows.push(...payload.r);
+      return state;
+    }
+
     // SQL_COMMAND_COMPLETE
     case 'WS_C': {
-      
+
+      const { currentTable, tables } = state;
+      const table = tables[currentTable];
+      if (!currentTable || !table) {
+        console.error('I should cose table, but no table is opened? WTF!?');
+      }
+
+      const finishedTable = {
+        ...table,
+        loading: false,
+        bytes: payload.b,
+        rowCount: payload.r,
+        text: payload.c,
+      };
+
+      return {
+        ...state,
+        tables: {
+          ...tables,
+          [table.luid]: finishedTable,
+        },
+        currentTable: null,
+      };
     }
 
     default:
