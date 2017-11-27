@@ -7,7 +7,7 @@ const upgradeHandler = (req, socket, head) => {
   if (WebSocket.isWebSocket(req)) {
     debugWs('Upgrade WebSocket', req.method, req.url);
     let ws = new WebSocket(req, socket, head, [], {
-      extensions: [deflate]
+      extensions: [deflate],
     });
     new Session(ws);
   }

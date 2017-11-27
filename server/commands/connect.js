@@ -48,6 +48,7 @@ exports.action = async (send, message, match, session) => {
 
   client.on('notification', (notification) => send({
     T: constants.SQL_NOTIFICATION,
+    cid: undefined,
     ...notification,
   }));
 
@@ -63,7 +64,7 @@ exports.action = async (send, message, match, session) => {
   con.on('readyForQuery', msg => {
     send({
       T: constants.SQL_READY_FOR_QUERY,
-      cid: session.currentCid || undefined,
+      cid: undefined,
       s: msg.status,
     });  
     session.currentCid = null;

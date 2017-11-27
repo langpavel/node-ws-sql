@@ -11,8 +11,8 @@ class Session extends EventEmitter {
   constructor(ws) {
     super();
     this._ws = null; // websocket
-    this._sid = null; // persistent session, connections will not be lost
-    this.pg = null; // database connection, driven externally
+    // this._sid = null; // TODO: persistent session, connections will not be lost
+    this.pg = null; // database connection
     this.currentCid = null;
     if (ws) this._attachWs(ws);
   }
@@ -45,7 +45,7 @@ class Session extends EventEmitter {
     } else {
       if (!json.T) throw new Error('T (as type) is required');
     }
-    if (!json.cid && this.currentCid) {
+    if (!Object.prototype.hasOwnProperty.call(json, 'cid') && this.currentCid) {
       json.cid = this.currentCid;
     }
     const str = JSON.stringify(json);
