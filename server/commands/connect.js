@@ -70,11 +70,9 @@ exports.action = async (send, message, match, session) => {
     session.currentCid = null;
   });  
 
-  await client.connect();
+  send("Connecting...");
 
-  // client.connection.on('message', msg => {
-  //   console.info('>>>', msg);
-  // });
+  await client.connect();
 
   if (session.pg) {
     session.pg.end().then(() => {
@@ -92,6 +90,5 @@ exports.action = async (send, message, match, session) => {
   }
 
   session.pg = client;
-  send("Connected");
   return true;
 };

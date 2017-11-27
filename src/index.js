@@ -20,7 +20,6 @@ psql.addEventListener('open', (e) => {
 
 psql.addEventListener('message', (e) => {
   const msg = JSON.parse(e.data);
-  console.info('PSQL msg', msg);
   store.dispatch(acceptWsMessage(msg));
 });
 

@@ -2,9 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import ReactJson from 'react-json-view'
-import './CommandOutput.css';
 
-class CommandOutput extends React.Component {
+export default class OutputListItem extends React.Component {
 
   static propTypes = {
     cid: PropTypes.string.isRequired,
@@ -28,11 +27,11 @@ class CommandOutput extends React.Component {
   }
 }
 
-const mapState = (state, props) => {
-  const cid = props.cid;
-  return {
-    responses: state.commands[cid],
-  };
-};
-
-export default connect(mapState)(CommandOutput);
+// const mapState = (state, props) => {
+//   const cid = props.cid;
+//   return {
+//     responses: state.commands[cid],
+//   };
+// };
+// 
+// export default connect(mapState)(CommandOutput);

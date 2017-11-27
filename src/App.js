@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import OutputContainer from './components/output/OutputContainer'
+import OutputList from './components/output/OutputList'
 import Prompt from './components/prompt/Prompt';
 import Header from './components/header/Header';
 import './App.css';
@@ -9,7 +9,7 @@ class App extends Component {
     return (
       <div className="App">
         <Header />
-        <OutputContainer />
+        <OutputList />
         <Prompt />
       </div>
     );

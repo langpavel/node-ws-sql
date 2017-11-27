@@ -16,7 +16,7 @@ export class Header extends Component {
     const { state } = this.props;
     return (
       <header className="App-header">
-        <Logo className="App-logo" arrowColor="#777777" arrowStroke="#777777" size={48} />
+        <Logo className="App-logo" status={state} size={48} />
         <h1 className="App-title">psql {state}</h1>
       </header>
     );
