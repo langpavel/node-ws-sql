@@ -6,6 +6,8 @@ const defaultState = {
   tables: {},
   // string reference to table which is currently received from socket
   currentTable: null,
+  // last *WORK* started at.. timestamp! (Date.now())
+  ts: null,
 };
 
 export default function outputReducer(state = defaultState, action) {
@@ -34,7 +36,13 @@ export default function outputReducer(state = defaultState, action) {
       // state of command from client changed against SQL server
       const { list } = state;
       // start of processing but no output yet
-      if (payload.s === 'W') return state;
+      if (payload.s === 'W') {
+        const ts = payload.t;
+        return {
+          ...state,
+          ts,
+        };
+      }
       return {
         ...state,
         list: [
@@ -58,6 +66,7 @@ export default function outputReducer(state = defaultState, action) {
 
       const newTable = {
         luid: meta.luid,
+        timing1: payload.t,
         columns: payload.f,
         loading: true,
         rowCount: 0,
@@ -108,6 +117,7 @@ export default function outputReducer(state = defaultState, action) {
 
       const finishedTable = {
         ...table,
+        timing2: payload.t,
         loading: false,
         bytes: payload.b,
         rowCount: payload.r,
