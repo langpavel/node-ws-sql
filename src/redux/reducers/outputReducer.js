@@ -2,70 +2,114 @@ const defaultState = {
   // list of every atomic.
   // every item can be deleted, hidden or pinned
   list: [],
-  // tables keyed by cid from ^list^
-  tables: {},
-  // string reference to table which is currently received from socket
+  // object containing resultset
+  currentCommand: null,
+  // object containing resultset
   currentTable: null,
-  // last *WORK* started at.. timestamp! (Date.now())
-  ts: null,
+  // last *WORK* started at `Date.now()` from server
+  lastCommandTs: null,
+};
+
+const reduceToList = (state, item, extra) => ({
+  ...state,
+  list: [ ...state.list, item ],
+  ...extra
+});
+
+// look for item by item.luid and replaces it
+const mergeInList = (state, item, extra) => {
+  const { list } = state;
+  const { luid } = item;
+  if (!item.luid) throw new Error('You didn\'t provide item.luid');
+  const index = list.findIndex(tested => tested.luid === luid);
+  if (index < 0) return state;
+  const oldItem = list[index];
+  return {
+    ...state,
+    list: [
+      ...list.slice(0, index),
+      {
+        ...oldItem,
+        ...item,
+      },
+      ...list.slice(index + 1),
+    ],
+    ...extra,
+  }  
 };
 
 export default function outputReducer(state = defaultState, action) {
   const { type, payload, meta } = action;
+  const luid = meta ? meta.luid : undefined;
   switch (type) {
     // sent command
-    case 'COMMAND':
+    case 'COMMAND': return reduceToList(state, {
+      render: 'command',
+      luid,
+      ...payload,
+    });
+
     // text response, like notice but artificial
-    case 'WS_*':
+    case 'WS_*': return reduceToList(state, {
+      render: 'text',
+      luid,
+      ...payload,
+    });
+
     // SQL_NOTICE
-    case 'WS_N':
+    case 'WS_N': return reduceToList(state, {
+      render: 'notice',
+      luid,
+      ...payload,
+    });
+
     // SQL_NOTIFICATION
-    case 'WS_A':
+    case 'WS_A': return reduceToList(state, {
+      render: 'notification',
+      luid,
+      ...payload,
+    });
+
     // ERROR
-    case 'WS_E': {
-      const { list } = state;
-      return {
-        ...state,
-        list: [
-          ...list,
-          payload,
-        ],
-      };
-    }
+    case 'WS_E': return reduceToList(state, {
+      render: 'error',
+      luid,
+      ...payload,
+    });
+
     case 'WS_Z': {
-      // state of command from client changed against SQL server
-      const { list } = state;
       // start of processing but no output yet
       if (payload.s === 'W') {
-        const ts = payload.t;
+        const lastCommandTs = payload.t;
         return {
           ...state,
-          ts,
+          lastCommandTs,
+          currentTable: null,
         };
       }
-      return {
-        ...state,
-        list: [
-          ...list,
-          {
-            render: 'separator',
-            props: { transactionState: payload.s },
-          },
-        ],
-      };
+
+      return reduceToList(state, {
+        render: 'separator',
+        luid,
+        transactionState: payload.s,
+      }, {
+        currentTable: null,
+      })
     }
 
     // SQL_ROW_DESCRIPTION
     case 'WS_T': {
-      const { list, tables, currentTable } = state;
+      const { list, currentTable } = state;
       if (currentTable !== null) {
-        console.error('currentTable expected to be bull in reduce, found this:', currentTable);
+        console.error('currentTable expected to be null in reduce, found this:', currentTable);
+      }
+      if (!luid) {
+        console.error('`meta.luid` is crucial for \'WS_T\' redux message');
       }
 
-      const tableId = meta.luid;
-
       const newTable = {
-        luid: meta.luid,
+        render: 'table',
+        luid,
         timing1: payload.t,
         columns: payload.f,
         loading: true,
@@ -74,18 +118,9 @@ export default function outputReducer(state = defaultState, action) {
         rows: [],
       }
 
-      return {
-        ...state,
-        list: [
-          ...list,
-          { table: tableId },
-        ],
-        tables: {
-          ...tables,
-          [tableId]: newTable,
-        },
-        currentTable: tableId,
-      };
+      return reduceToList(state, newTable, {
+        currentTable: newTable,
+      });
     }
 
     case 'WS_D': {
@@ -95,43 +130,48 @@ export default function outputReducer(state = defaultState, action) {
       // just because of *ONLY* appended rows..
       // everything will be fixed after SQL_COMMAND_COMPLETE :-)
       const { r } = payload;
-      const { currentTable, tables } = state;
-      const table = tables[currentTable];
-      if (!currentTable || !table) {
+      const { currentTable } = state;
+      if (!currentTable) {
         console.error('Hey, what I can do with this rows? I don\'t know context!', r);
+        return state;
       }
-      // this is the evil :-)
-      // state is in fact untouched
-      table.rows.push(...payload.r);
-      return state;
+      currentTable.rowCount += payload.r.length;
+      currentTable.rows.push(...payload.r); // MUTABLE but not a bug :-)
+      return mergeInList(state, currentTable);
     }
 
     // SQL_COMMAND_COMPLETE
     case 'WS_C': {
-
       const { currentTable, tables } = state;
-      const table = tables[currentTable];
-      if (!currentTable || !table) {
-        console.error('I should cose table, but no table is opened? WTF!?');
-      }
-
-      const finishedTable = {
-        ...table,
-        timing2: payload.t,
-        loading: false,
+      const commandComplete = {
+        render: 'commandComplete',
+        luid,
+        timing: payload.t,
+        text: payload.c,
         bytes: payload.b,
         rowCount: payload.r,
-        text: payload.c,
       };
 
-      return {
-        ...state,
-        tables: {
-          ...tables,
-          [table.luid]: finishedTable,
-        },
-        currentTable: null,
-      };
+      // some commands, like LISTEN does not returns T/D messages
+      // so it is possible that currentTable can be null
+      if (currentTable === null) {
+        return reduceToList(state, commandComplete, { currentTable: null });
+      } else {
+        if (!currentTable) {
+          console.error('I should cose table, but no table is opened? WTF!?');
+        }
+  
+        const finishedTable = {
+          ...currentTable,
+          timing2: payload.t,
+          loading: false,
+          bytes: payload.b,
+          rowCount: payload.r,
+          text: payload.c,
+        };
+  
+        return reduceToList(state, commandComplete, { currentTable: null });
+      }
     }
 
     default:
