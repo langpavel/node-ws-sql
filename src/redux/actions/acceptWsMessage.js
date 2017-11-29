@@ -8,7 +8,7 @@ export default function acceptWsMessage(payload) {
         payload,
         meta: {
           luid: luid(),
-        }
+        },
       });
     } else {
       console.error('acceptWsMessage expect `T` property');

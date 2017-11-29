@@ -7,7 +7,7 @@ class OutputList extends React.Component {
   render() {
     return (
       <div className="OutputList">
-        {this.props.outputList.map((thing, no) => <div key={no}>{JSON.stringify(thing)}</div>)}
+        {this.props.outputList.map((thing) => <div key={thing.luid}>{JSON.stringify(thing, null, 2)}</div>)}
       </div>
     );
   }
