@@ -1,0 +1,9 @@
+.OutputCommandComplete {
+  color: #555;
+  font-size: 80%;
+}
+
+.OutputCommandComplete .extra {
+  color: #999;
+}
+

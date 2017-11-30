@@ -1,10 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import TextareaAutosize from 'react-textarea-autosize';
 import { connect } from 'react-redux';
 import sendCommand from '../../redux/actions/sendCommand';
 import './Prompt.css';
 
 class Prompt extends React.Component {
+
+  static propTypes = {
+    connectionWord: PropTypes.string.isRequired,
+  }
 
   handleChange = (e) => {
     console.log(e);
@@ -28,8 +33,9 @@ class Prompt extends React.Component {
   }
 
   render() {
+    const { connectionWord } = this.props;
     return (
-      <form className="prompt" onSubmit={this.send}>
+      <form className={`Prompt PromptInState${connectionWord}`} onSubmit={this.send}>
         <TextareaAutosize
           defaultValue="\connect"
           inputRef={this.setRef}
@@ -37,14 +43,14 @@ class Prompt extends React.Component {
           maxRows={40}
           useCacheForDOMMeasurements
         />
-        <button className="execButton">Execute</button>
+        <button className="ExecButton">Execute</button>
       </form>
     )
   }
 }
 
 const mapState = (state) => ({
-
+  connectionWord: state.connectionState.kword,
 });
 const mapDispatch = ({
   sendCommand

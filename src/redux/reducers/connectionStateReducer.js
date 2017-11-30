@@ -11,6 +11,14 @@ const defaultState = {
   state: '?',
 };
 
+const stateToKword = {
+  'I': 'Idle',
+  'T': 'Transaction',
+  'E': 'Error',
+  '?': 'Unknown',
+  'W': 'Working',
+}
+
 export default function connectionStateReducer(state = defaultState, action) {
   const { type, payload } = action;
   switch (type) {
@@ -21,6 +29,8 @@ export default function connectionStateReducer(state = defaultState, action) {
         inQuery: readyState === 'W',
         inTransaction: readyState === 'T' || readyState === 'E',
         state: readyState,
+        // redundant. This is used as CSS suffix and can be used where /^[A-Z][a-z]+$/ is needed :-)
+        kword: stateToKword[readyState] || 'Undefined',
       };
     }
     default:

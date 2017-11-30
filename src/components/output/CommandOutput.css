@@ -1,0 +1,6 @@
+.CommandOutput,
+.CommandOutput code,
+.CommandOutput pre {
+  margin: 0;
+  padding: 0;
+}

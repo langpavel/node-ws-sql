@@ -1,0 +1,80 @@
+.OutputError {
+  background-color: #000;
+  padding: 2px 0;
+}
+
+.OutputError .error-source::before { content: '(' }
+.OutputError .error-source::after { content: ')' }
+.OutputError .error-source {
+  color: #000;
+}
+
+/*
+ * Severity       | Eventlog    | Usage
+ * ---------------|-------------|-----------------------------------------------------------------------------------------------------
+ * DEBUG1..DEBUG5 | INFORMATION | Provides successively-more-detailed information for use by developers.
+ * INFO           | INFORMATION | Provides information implicitly requested by the user, e.g., output from VACUUM VERBOSE.
+ * NOTICE         | INFORMATION | Provides information that might be helpful to users, e.g., notice of truncation of long identifiers.
+ * WARNING        | WARNING     | Provides warnings of likely problems, e.g., COMMIT outside a transaction block.
+ * ERROR          | ERROR       | Reports an error that caused the current command to abort.
+ * LOG            | INFORMATION | Reports information of interest to administrators, e.g., checkpoint activity.
+ * FATAL          | ERROR       | Reports an error that caused the current session to abort.
+ * PANIC          | ERROR       | Reports an error that caused all database sessions to abort.
+ */
+
+/* SEVERITY ERROR, FATAL, PANIC */
+.OutputError-severity-PANIC,
+.OutputError-severity-FATAL,
+.OutputError-severity-ERROR {
+  background-color: rgba(255, 0, 0, 0.55);
+}
+
+.OutputError-severity-PANIC .code,
+.OutputError-severity-FATAL .code,
+.OutputError-severity-ERROR .code {
+  color: #fd9;
+}
+
+/* SEVERITY INFO */
+.OutputError-severity-INFO {
+  background-color: rgba(0, 130, 64, 0.2);
+}
+.OutputError-severity-INFO .code {
+  color: #0d9;
+}
+.OutputError-severity-INFO .message {
+  color: #cfe;
+}
+.OutputError-severity-INFO .error-source {
+  color: #375;
+}
+
+ /* SEVERITY LOG */
+.OutputError-severity-LOG {
+  background-color: rgba(0, 0, 164, 0.2);
+}
+.OutputError-severity-LOG .code {
+  color: #059;
+}
+.OutputError-severity-LOG .message {
+  color: #c8c8ff;
+}
+.OutputError-severity-LOG .error-source {
+  color: #347;
+}
+
+/* SEVERITY NOTICE */
+.OutputError-severity-NOTICE {
+  background-color: rgba(0, 262, 255, 0.2);
+}
+.OutputError-severity-NOTICE .code {
+  color: #7cf;
+}
+
+/* SEVERITY WARNING */
+.OutputError-severity-WARNING {
+  background-color: rgba(255, 212, 0, 0.3);
+}
+.OutputError-severity-WARNING .code {
+  color: #ff9;
+}

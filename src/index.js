@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { IntlProvider } from 'react-intl';
 
 import { createWsClient } from './wsClient';
 import store from './redux';
-import { Provider } from 'react-redux';
 import App from './App';
 import acceptWsMessage from './redux/actions/acceptWsMessage';
 
@@ -11,8 +12,10 @@ import './index.css';
 
 import registerServiceWorker from './registerServiceWorker';
 
-
 const psql = createWsClient();
+const intlConfig = {
+  locale: 'en',
+};
 
 psql.addEventListener('open', (e) => {
   console.info('PSQL opened');
@@ -33,6 +36,12 @@ psql.addEventListener('close', (e) => {
 
 window.psql = psql;
 
-ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
+ReactDOM.render(
+  <Provider store={store}>
+    <IntlProvider {...intlConfig}>
+      <App />
+    </IntlProvider>
+  </Provider>,
+  document.getElementById('root'));
 
 registerServiceWorker();

@@ -24,7 +24,7 @@ export class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  state: state.connectionState.state,
+  state: state.connectionState.kword,
   conParams: state.connectionParams,
 });
 

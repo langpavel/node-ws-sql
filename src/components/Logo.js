@@ -17,8 +17,7 @@ class Logo extends React.PureComponent {
   };
 
   render() {
-    let { status, arrowColor, arrowStroke, size, width, height, ...svgRestProps } = this.props;
-    if (status === '?') status = 'unknown';
+    const { status, arrowColor, arrowStroke, size, width, height, ...svgRestProps } = this.props;
     return (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"
         width={width || size || 48}

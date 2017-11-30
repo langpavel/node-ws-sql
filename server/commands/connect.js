@@ -70,8 +70,6 @@ exports.action = async (send, message, match, session) => {
     session.currentCid = null;
   });  
 
-  send("Connecting...");
-
   await client.connect();
 
   if (session.pg) {

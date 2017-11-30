@@ -16,31 +16,31 @@ E: red    PQTRANS_INERROR — Server is in aborted transaction due to an error
   fill: #ffffff;
 }
 
-.Logo.Logo-I .Logo-arrow {
+.Logo.Logo-Idle .Logo-arrow {
   fill: #ffffff;
   stroke: #777;
   stroke-width: 7;
 }
 
-.Logo.Logo-W .Logo-arrow {
+.Logo.Logo-Work .Logo-arrow {
   fill: #0000ff;
   stroke: #ffffff;
   stroke-width: 3;
 }
 
-.Logo.Logo-T .Logo-arrow {
+.Logo.Logo-Transaction .Logo-arrow {
   fill: #00bb00;
   stroke: #77ff77;
   stroke-width: 5;
 }
 
-.Logo.Logo-E .Logo-arrow {
+.Logo.Logo-Error .Logo-arrow {
   fill: #ff2222;
   stroke: #000000;
   stroke-width: 7;
 }
 
-.Logo.Logo-unknown .Logo-arrow {
+.Logo.Logo-Unknown .Logo-arrow {
   fill:rgba(160, 160, 160, 0);
   stroke: rgba(160, 160, 160, 0);
   stroke-width: 0;

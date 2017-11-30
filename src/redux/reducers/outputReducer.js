@@ -99,7 +99,7 @@ export default function outputReducer(state = defaultState, action) {
 
     // SQL_ROW_DESCRIPTION
     case 'WS_T': {
-      const { list, currentTable } = state;
+      const { currentTable } = state;
       if (currentTable !== null) {
         console.error('currentTable expected to be null in reduce, found this:', currentTable);
       }
@@ -142,7 +142,7 @@ export default function outputReducer(state = defaultState, action) {
 
     // SQL_COMMAND_COMPLETE
     case 'WS_C': {
-      const { currentTable, tables } = state;
+      const { currentTable } = state;
       const commandComplete = {
         render: 'commandComplete',
         luid,
@@ -170,7 +170,11 @@ export default function outputReducer(state = defaultState, action) {
           text: payload.c,
         };
   
-        return reduceToList(state, commandComplete, { currentTable: null });
+        return reduceToList(
+          mergeInList(state, finishedTable),
+          commandComplete,
+          { currentTable: null },
+        );
       }
     }
 

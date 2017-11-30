@@ -1,5 +1,15 @@
 body {
   min-height: 100%;
+  background-color: #1d1d1c;
+  color: #a8a8a8;
+}
+
+hr {
+  border-style: dashed;
+  margin: 0.125px 0;
+  padding: 0;
+  border-width: 0.5px;
+  opacity: 0.125;
 }
 
 .App {
