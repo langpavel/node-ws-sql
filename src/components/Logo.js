@@ -9,11 +9,11 @@ class Logo extends React.PureComponent {
     size: PropTypes.number,
     width: PropTypes.number,
     height: PropTypes.number,
-    status: PropTypes.string, // set CSS class by I, W, T, E, ?
+    status: PropTypes.string,
   }
 
   static defaultProps = {
-    status: '?',
+    status: 'Unknown',
   };
 
   render() {

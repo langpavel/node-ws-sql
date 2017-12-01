@@ -1,0 +1,22 @@
+.OutputTableContainer {
+  overflow: auto;
+  max-width: 100%;
+  max-height: 80%;
+}
+
+table.OutputTable {
+  border-collapse: collapse;
+}
+
+table.OutputTable th,
+table.OutputTable td {
+  border: 1px #555 solid;
+  margin: 0;
+  padding: 0 0.6ex;
+  white-space: pre;
+}
+
+table.OutputTable th {
+  color: #fff;
+}
+

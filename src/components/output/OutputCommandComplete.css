@@ -1,9 +1,9 @@
 .OutputCommandComplete {
-  color: #555;
-  font-size: 80%;
+  color: #ccc;
+  background-color: #000;
 }
 
 .OutputCommandComplete .extra {
-  color: #999;
+  color: #777;
 }
 

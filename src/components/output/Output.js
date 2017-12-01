@@ -8,6 +8,7 @@ import OutputText from './OutputText';
 import OutputError from './OutputError';
 import OutputSeparator from './OutputSeparator';
 
+import './Output.css';
 
 // For each item match rendered
 const renderers = {
@@ -15,6 +16,7 @@ const renderers = {
   commandComplete: OutputCommandComplete,
   table: OutputTable,
   text: OutputText,
+  notice: OutputError,
   error: OutputError,
   separator: OutputSeparator,
 };

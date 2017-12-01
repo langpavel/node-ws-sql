@@ -16,24 +16,3 @@ hr {
   text-align: left;
   min-height: 100%;
 }
-
-.App-logo {
-  margin: 0 5px;
-}
-
-.App-header {
-  background-color: #222;
-  padding: 0px;
-  color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-  display: inline;
-  margin: 8px;
-  padding: 8px;
-}
-
-.App-intro {
-  font-size: large;
-}

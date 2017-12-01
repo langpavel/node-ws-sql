@@ -42,10 +42,8 @@ class Session extends EventEmitter {
         line: json.line,
         routine: json.routine,
       };
-    } else {
-      if (!json.T) throw new Error('T (as type) is required');
     }
-    if (!Object.prototype.hasOwnProperty.call(json, 'cid') && this.currentCid) {
+    if (this.currentCid && !Object.prototype.hasOwnProperty.call(json, 'cid')) {
       json.cid = this.currentCid;
     }
     const str = JSON.stringify(json);
@@ -102,7 +100,9 @@ class Session extends EventEmitter {
           return this.error('Invalid JSON input');
         }
       } else {
-        const [, cid, cmd] = reCmd.exec(raw);
+        const match = reCmd.exec(raw);
+        if (!match) return this.send({});
+        const [, cid, cmd] = match;
         message = {
           cid,
           cmd,

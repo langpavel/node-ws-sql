@@ -10,37 +10,41 @@ export default class OutputError extends React.PureComponent {
     luid: PropTypes.string,
     render: PropTypes.string,
     message: PropTypes.string.isRequired,
+    detail: PropTypes.string,
+    hint: PropTypes.string,
     severity: PropTypes.string,
     code: PropTypes.string,
     position: PropTypes.string,
+    where: PropTypes.string,
     file: PropTypes.string,
     line: PropTypes.string,
     routine: PropTypes.string,
   };
-
+  
   render() {
     const {
+      T, luid,
       render,
       message,
       severity,
       code,
-      position,
       file,
       line,
       routine,
+      ...other,
     } = this.props;
     const { errorClass, conditionName } = getErrorDescription(code);
     return (
       <div className={`OutputError OutputError-render-${render} OutputError-severity-${severity}`}>
-        <span className="code" title={`${conditionName} (${errorClass})`}>{severity} {code}</span>
+        <span className="code" title={`${conditionName} (${errorClass})`}>{severity}: {code}:</span>
         {' '}
         <span className="message">{message}</span>
-        {' '}
+        {Object.keys(other).map(key => <div key={key} className={key}>{key.toUpperCase()}: {other[key]}</div>)}
         <span className="error-source">
           {routine}
-          {' in '}
+          {', '}
           {file}
-          {' at line '}
+          {':'}
           {line}
         </span>
       </div>

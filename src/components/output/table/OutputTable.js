@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import './OutputTable.css';
+
 export default class OutputTable extends React.Component {
   static propTypes = {
     luid: PropTypes.string.isRequired,
@@ -24,26 +26,28 @@ export default class OutputTable extends React.Component {
   render() {
     const { columns, rows } = this.props;
     return (
-      <table className="OutputTable">
-        <thead>
-          <tr>
-            {
-              columns.map((column, ix) => (
-                <th key={ix}>{column.name}</th>
-              ))
-            }
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, ri) =>
-            <tr key={ri}>
-              {row.map((colValue, rci) => (
-                <td key={rci}>{colValue}</td>
-              ))}
+      <div className="OutputTableContainer">
+        <table className="OutputTable">
+          <thead>
+            <tr>
+              {
+                columns.map((column, ix) => (
+                  <th key={ix}>{column.name}</th>
+                ))
+              }
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) =>
+              <tr key={ri}>
+                {row.map((colValue, rci) => (
+                  <td key={rci}>{colValue}</td>
+                ))}
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     )
   }
 }

@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Logo from '../Logo';
 
+import './Header.css';
+
 export class Header extends Component {
   static propTypes = {
     // connected: PropTypes.bool,

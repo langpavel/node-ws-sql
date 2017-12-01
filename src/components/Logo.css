@@ -9,7 +9,7 @@ E: red    PQTRANS_INERROR — Server is in aborted transaction due to an error
 .Logo {
   fill: #336791;
   stroke: #ffffff;
-  stroke-width: 2;
+  stroke-width: 3;
 }
 
 .Logo .Logo-slony-eyes {
@@ -17,9 +17,9 @@ E: red    PQTRANS_INERROR — Server is in aborted transaction due to an error
 }
 
 .Logo.Logo-Idle .Logo-arrow {
-  fill: #ffffff;
-  stroke: #777;
-  stroke-width: 7;
+  fill: #ddd;
+  stroke: #fff;
+  stroke-width: 3;
 }
 
 .Logo.Logo-Work .Logo-arrow {
@@ -31,13 +31,13 @@ E: red    PQTRANS_INERROR — Server is in aborted transaction due to an error
 .Logo.Logo-Transaction .Logo-arrow {
   fill: #00bb00;
   stroke: #77ff77;
-  stroke-width: 5;
+  stroke-width: 3;
 }
 
 .Logo.Logo-Error .Logo-arrow {
   fill: #ff2222;
   stroke: #000000;
-  stroke-width: 7;
+  stroke-width: 3;
 }
 
 .Logo.Logo-Unknown .Logo-arrow {
