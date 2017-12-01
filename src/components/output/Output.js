@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import UnknownOutput from './UnknownOutput';
 import CommandOutput from './CommandOutput';
 import OutputCommandComplete from './OutputCommandComplete';
+import OutputTable from './table/OutputTable';
 import OutputText from './OutputText';
 import OutputError from './OutputError';
 import OutputSeparator from './OutputSeparator';
@@ -12,6 +13,7 @@ import OutputSeparator from './OutputSeparator';
 const renderers = {
   command: CommandOutput,
   commandComplete: OutputCommandComplete,
+  table: OutputTable,
   text: OutputText,
   error: OutputError,
   separator: OutputSeparator,
