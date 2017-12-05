@@ -1,9 +1,9 @@
 .App-logo {
-  margin: 0 5px;
+  margin: 1px 5px;
 }
 
 .App-header {
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   right: 0;

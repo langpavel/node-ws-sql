@@ -10,7 +10,7 @@ export class Header extends Component {
     // connected: PropTypes.bool,
     // inQuery: PropTypes.bool,
     // inTransaction: PropTypes.bool,
-    state: PropTypes.string.isRequired,
+    state: PropTypes.string,
     conParams: PropTypes.object.isRequired,
   }
 

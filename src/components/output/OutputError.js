@@ -23,7 +23,7 @@ export default class OutputError extends React.PureComponent {
   
   render() {
     const {
-      T, luid,
+      T, cid, luid,
       render,
       message,
       severity,

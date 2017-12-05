@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
+    "ace-builds": "^1.2.9",
     "classnames": "^2.2.5",
     "debug": "^3.1.0",
     "dotenv": "^4.0.0",
@@ -19,11 +20,9 @@
     "react-json-view": "^1.13.3",
     "react-redux": "^5.0.6",
     "react-scripts": "1.0.17",
-    "react-textarea-autosize": "^5.2.0",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.2.0",
-    "serialize-error": "^2.1.0"
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "concurrently": "^3.5.0"

@@ -1,5 +1,6 @@
 const http = require('http');
 const express = require('express');
+// helmet help secure Express/Connect apps with various HTTP headers
 const helmet = require('helmet');
 const expressEnforcesSSL = require('express-enforces-ssl');
 const dotenv = require('dotenv');
@@ -50,6 +51,9 @@ app
 app.get('/example-path', async (req, res, next) => {
   res.json({ message: "Hello World!" });
 });
+
+// Inject ACE editor
+app.use('/ace', express.static('node_modules/ace-builds/src-min-noconflict'));
 
 // Serve static assets built by create-react-app
 app.use(express.static('build'));

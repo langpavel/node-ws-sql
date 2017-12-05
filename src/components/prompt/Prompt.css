@@ -1,31 +1,16 @@
 .Prompt {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
   margin: 0;
   padding: 0;
-  background-color: #000;
-}
-
-.Prompt textarea {
-  width: 100%;
-  min-width: 100%;
-  max-width: 100%;
-  min-height: 3rem;
-  margin: 0;
-  padding: 0;
-  background-color: #000;
-  color: #fff;
-  border: 1px solid #444;
-}
-
-.Prompt textarea:focus {
+  background-color: #fff;
   outline: none;
-  border: 1px solid #666;
+  outline-offset: 0;
+  outline-style: nnone;
+  outline-width: 0;
 }
 
 .Prompt .ExecButton {
+  z-index: 1000;
   position: absolute;
   bottom: 5px;
   right: 2px;
@@ -36,6 +21,11 @@
   color: #999;
   font-weight: 900;
   background-color: #000;
+}
+
+.PromptEditor {
+  font-size: 14px;
+  min-height: 3rem;
 }
 
 .Prompt .ExecButton:focus {

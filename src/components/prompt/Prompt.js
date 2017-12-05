@@ -1,47 +1,49 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TextareaAutosize from 'react-textarea-autosize';
 import { connect } from 'react-redux';
+// import TextareaAutosize from 'react-textarea-autosize';
+import AceEditor from './AceEditor';
 import sendCommand from '../../redux/actions/sendCommand';
 import './Prompt.css';
 
 class Prompt extends React.Component {
 
   static propTypes = {
-    connectionWord: PropTypes.string.isRequired,
+    connectionWord: PropTypes.string,
   }
 
   handleChange = (e) => {
     console.log(e);
   }
 
-  setRef = (input) => {
-    if (this.input !== input) {
-      this.input = input;
-      input.onkeypress = (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          this.send();
-        }
-      }
+  setRef = (editor) => {
+    if (this.editor !== editor) {
+      this.editor = editor;
+      // input.onkeypress = (e) => {
+      //   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      //     this.send();
+      //   }
+      // }
     }
   }
 
   send = (e) => {
     if (e) e.preventDefault();
-    this.props.sendCommand(this.input.value);
-    this.input.value = '';
+    this.props.sendCommand(this.editor.getValue());
+    this.editor.setValue('');
+    this.editor.focus();
   }
 
   render() {
-    const { connectionWord } = this.props;
+    const { connectionWord, sendCommand } = this.props;
     return (
       <form className={`Prompt PromptInState${connectionWord}`} onSubmit={this.send}>
-        <TextareaAutosize
+        <AceEditor
+          ref={this.setRef}
+          autoFocus
+          className="PromptEditor"
           defaultValue="\connect"
-          inputRef={this.setRef}
-          minRows={3}
-          maxRows={40}
-          useCacheForDOMMeasurements
+          onExecute={sendCommand}
         />
         <button className="ExecButton">Execute</button>
       </form>
@@ -52,8 +54,9 @@ class Prompt extends React.Component {
 const mapState = (state) => ({
   connectionWord: state.connectionState.kword,
 });
+
 const mapDispatch = ({
-  sendCommand
-})
+  sendCommand,
+});
 
 export default connect(mapState, mapDispatch)(Prompt);

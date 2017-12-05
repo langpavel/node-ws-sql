@@ -13,6 +13,6 @@ export default function sendCommand(cmd) {
         luid,
       },
     });
-    window.psql.send(cmd);
+    window.psql.send(`[${luid}]${cmd}`);
   };
 }

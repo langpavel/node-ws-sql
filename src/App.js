@@ -10,8 +10,10 @@ class App extends Component {
     return (
       <div className="App">
         <Header />
-        <Output />
-        <Prompt />
+        <div className="AppScrollable">
+          <Output />
+          <Prompt />
+        </div>
       </div>
     );
   }
