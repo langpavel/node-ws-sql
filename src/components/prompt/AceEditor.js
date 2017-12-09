@@ -93,7 +93,7 @@ export default class AceEditor extends React.Component {
 
   render() {
     console.log('AceEditor.render');
-    const { className, defaultValue } = this.props;
+    const { className } = this.props;
     const currentLines = this.session ? this.session.getLength() : MIN_LINES;
     const style = {
       height: `${Math.max(currentLines, MIN_LINES) * 16}px`,
@@ -107,35 +107,4 @@ export default class AceEditor extends React.Component {
     )
   }
 
-  //  render() {
-  //    const { defaultValue } = this.props;
-  //    const lines = 3;
-  //    const fontSize = 14;
-  //    const height = lines * (fontSize + 1);
-  //
-  //    return (
-  //      <AceEditor
-  //        mode="pgsql"
-  //        theme="tomorrow_night_bright"
-  //        name="prompt"
-  //        onLoad={this.handleLoad}
-  //        onChange={this.handleChange}
-  //        fontSize={fontSize}
-  //        showPrintMargin={false}
-  //        showGutter
-  //        highlightActiveLine={false}
-  //        defaultValue={defaultValue}
-  //        width="100%"
-  //        height={`${height}px`}
-  //        setOptions={{
-  //          autoScrollEditorIntoView: true,
-  //          showLineNumbers: true,
-  //          fontSize: 13,
-  //          minLines: 3,
-  //          useSoftTabs: true,
-  //          tabSize: 2,
-  //        }}
-  //      />
-  //    );
-  //  }
 }
