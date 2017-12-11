@@ -17,4 +17,11 @@ const store = createStore(
 
 window.store = store;
 
+if (module.hot) {
+  module.hot.accept('./reducers', () => {
+    const nextRootReducer = require('./reducers').default;
+    store.replaceReducer(nextRootReducer);
+  });
+}
+
 export default store;
