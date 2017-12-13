@@ -1,25 +1,22 @@
-.App-logo {
-  margin: 1px 5px;
-}
-
 .App-header {
   position: absolute;
   left: 0;
   top: 0;
   right: 0;
+  height: 32px;
   z-index: 100;
-  background-color: #222;
-  padding: 0px;
-  color: white;
+  background-color: #111;
+  color: #fff;
+}
+
+.App-logo {
+  float: left;
+  margin: 2px 12px 0 4px;
+  height: 2rem;
+  width: 2rem;
 }
 
 .App-title {
-  font-size: 1.5em;
+  font-size: 1.8rem;
   display: inline;
-  margin: 8px;
-  padding: 8px;
-}
-
-.App-intro {
-  font-size: large;
 }
