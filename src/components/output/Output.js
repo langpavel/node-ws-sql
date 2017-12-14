@@ -5,6 +5,7 @@ import CommandOutput from './CommandOutput';
 import OutputCommandComplete from './OutputCommandComplete';
 import OutputTable from './table/OutputTable';
 import OutputText from './OutputText';
+import OutputMarkdown from './OutputMarkdown';
 import OutputError from './OutputError';
 import OutputSeparator from './OutputSeparator';
 
@@ -16,6 +17,7 @@ const renderers = {
   commandComplete: OutputCommandComplete,
   table: OutputTable,
   text: OutputText,
+  md: OutputMarkdown,
   notice: OutputError,
   error: OutputError,
   separator: OutputSeparator,

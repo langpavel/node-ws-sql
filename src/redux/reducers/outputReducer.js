@@ -51,7 +51,7 @@ export default function outputReducer(state = defaultState, action) {
 
     // text response, like notice but artificial
     case 'WS_*': return reduceToList(state, {
-      render: 'text',
+      render: (payload && payload.md) ? 'md' : 'text',
       luid,
       ...payload,
     });
