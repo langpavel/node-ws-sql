@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Value from './Value';
 
 import './OutputTable.css';
 
@@ -15,40 +16,106 @@ export default class OutputTable extends React.Component {
       dataTypeModifier: PropTypes.number,
       // format: PropTypes.string,
     })),
-    rows: PropTypes.array,
+    rows: PropTypes.array, // all rows
+    rowsView: PropTypes.array, // slice of rendered rows
+    rowCount: PropTypes.number, // count of all rows, default rows.length
+    // properties driving view
+    offset: PropTypes.number,
+    maxRows: PropTypes.number,
   };
+
+  static defaultProps = {
+    offset: 0,
+    maxRows: 20,
+  };
+
+  constructor(props) {
+    super(props);
+    const {
+      offset,
+      maxRows,
+    } = props;
+    this.state = {
+      offset,
+      maxRows,
+    };
+  }
 
   // Like every component, remember...
   shouldComponentUpdate() {
     return true;
   }
 
+  handleCellClick = (e, rowIndex, colIndex) => {
+    console.log(`Cell click: ${rowIndex}:${colIndex}`);
+  }
+
+  handleWheel = (e) => {
+    // Wheel + modifiers are passed to browser
+    // Shift+wheel scrolls horizontaly (native, at least on my Linux)
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.deltaY === 0) return;
+
+    e.preventDefault();
+
+    const wheelStepProp = `wheelStepSize${e.deltaMode}`;
+    const distance = Math.abs(e.deltaY);
+    let wheelStepSize = this[wheelStepProp];
+    if (!wheelStepSize || (wheelStepSize > distance)) {
+      wheelStepSize = distance;
+      this[wheelStepProp] = wheelStepSize;
+    }
+    const wheelMoves = Math.round(e.deltaY / wheelStepSize);
+    this.setState(state => ({ offset: state.offset + wheelMoves }));
+    console.log('Wheeeel', wheelMoves);
+  }
+
   render() {
-    const { columns, rows } = this.props;
+    const { columns, rowsView, rows } = this.props;
+    const { offset, maxRows } = this.state;
+    const renderedRows = rowsView || rows.slice(offset, offset + maxRows);
+
+    const renderHeaderCell = (column, ih) => (<th key={ih}>{column.name}</th>);
+
+    let prevRow;
+    const renderDataRow = (row, rowIndex) => {
+      const renderDataCell = (col, colIndex) => {
+        const value = row[colIndex];
+        const joinUp = prevRow && (prevRow[colIndex] === value);
+        return (
+          <Value
+            Container="td"
+            key={colIndex}
+            column={col}
+            value={value}
+            className={joinUp ? 'join-up' : ''}
+            onClick={(e) => this.handleCellClick(e, rowIndex + offset, colIndex)}
+            onWheel={this.handleWheel}
+          />);
+      };
+      const result = (
+        <tr key={rowIndex + offset}>
+          {columns.map(renderDataCell)}
+        </tr>
+      );
+      prevRow = row;
+      return result;
+    };
+
     return (
       <div className="OutputTableContainer">
         <table className="OutputTable">
           <thead>
             <tr>
-              {
-                columns.map((column, ix) => (
-                  <th key={ix}>{column.name}</th>
-                ))
-              }
+              {columns.map(renderHeaderCell)}
             </tr>
           </thead>
-          <tbody>
-            {rows.map((row, ri) =>
-              <tr key={ri}>
-                {row.map((colValue, rci) => (
-                  <td key={rci}>{colValue}</td>
-                ))}
-              </tr>
-            )}
+          <tbody onClick={this.handleClick}>
+            {renderedRows.map(renderDataRow)}
           </tbody>
         </table>
       </div>
-    )
+    );
   }
 }
 
@@ -69,24 +136,6 @@ export default class OutputTable extends React.Component {
 //       "dataTypeModifier": -1,
 //       "format": "text"
 //     },
-//     {
-//       "name": "born_year",
-//       "tableID": 17144,
-//       "columnID": 6,
-//       "dataTypeID": 21,
-//       "dataTypeSize": 2,
-//       "dataTypeModifier": -1,
-//       "format": "text"
-//     },
-//     {
-//       "name": "horse_name",
-//       "tableID": 17144,
-//       "columnID": 4,
-//       "dataTypeID": 25,
-//       "dataTypeSize": -1,
-//       "dataTypeModifier": -1,
-//       "format": "text"
-//     }
 //   ],
 //   "loading": false,
 //   "rowCount": 1,

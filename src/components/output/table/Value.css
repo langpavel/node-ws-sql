@@ -1,0 +1,8 @@
+.Value.null {
+  background-color: rgba(0,0,0,0.5);
+  color: rgba(100, 100, 100, 0.5);
+}
+
+.Value.null:before {
+  content: 'NULL';
+}
