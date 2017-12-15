@@ -41,6 +41,8 @@ export default class OutputTable extends React.Component {
     };
   }
 
+  getRowCount = () => (this.props.rowCount || this.props.rows.length);
+
   // Like every component, remember...
   shouldComponentUpdate() {
     return true;
@@ -56,8 +58,6 @@ export default class OutputTable extends React.Component {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
     if (e.deltaY === 0) return;
 
-    e.preventDefault();
-
     const wheelStepProp = `wheelStepSize${e.deltaMode}`;
     const distance = Math.abs(e.deltaY);
     let wheelStepSize = this[wheelStepProp];
@@ -66,7 +66,24 @@ export default class OutputTable extends React.Component {
       this[wheelStepProp] = wheelStepSize;
     }
     const wheelMoves = Math.round(e.deltaY / wheelStepSize);
-    this.setState(state => ({ offset: state.offset + wheelMoves }));
+    const possibleNewOffset = this.state.offset + wheelMoves;
+    if (possibleNewOffset < 0) return; // let browser handle the event
+    const maxOffset = this.getRowCount() - this.state.maxRows;
+    if (possibleNewOffset > maxOffset) return; // let browser handle the event
+
+    if (this.container) {
+
+    }
+
+    e.preventDefault();
+    this.setState(state => {
+      const maxOffset = this.getRowCount() - state.maxRows;
+      let offset = state.offset + wheelMoves;
+      if (offset > maxOffset) offset = maxOffset;
+      if (offset < 0) offset = 0;
+      console.log('New offset', offset);
+      return { offset };
+    });
     console.log('Wheeeel', wheelMoves);
   }
 
@@ -103,7 +120,10 @@ export default class OutputTable extends React.Component {
     };
 
     return (
-      <div className="OutputTableContainer">
+      <div
+        className="OutputTableContainer"
+        ref={container => this.container = container}
+      >
         <table className="OutputTable">
           <thead>
             <tr>
